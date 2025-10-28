@@ -74,6 +74,8 @@ public class Kalkulator extends JFrame {
 	/**
 	 * Create the frame.
 	 */
+	private boolean unosOdPocetka = true; // globalno
+
 	public Kalkulator() {
 		setResizable(false);
 		getContentPane().setLayout(new BorderLayout(0, 0));
@@ -91,13 +93,14 @@ public class Kalkulator extends JFrame {
 		panelIzlaz.setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
 		
 		textFieldPomocni = new JTextField();
-		textFieldPomocni.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		textFieldPomocni.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		textFieldPomocni.setBackground(new Color(255, 255, 255));
 		panelIzlaz.add(textFieldPomocni);
 		textFieldPomocni.setColumns(10);
 		textFieldPomocni.setBorder(null);
 		textFieldPomocni.setHorizontalAlignment(JTextField.RIGHT);
 		textFieldPomocni.setEditable(false);
+		textFieldPomocni.setForeground(Color.gray);
 		
 		textFieldTrenutni = new JTextField();
 		textFieldTrenutni.setFont(new Font("Tahoma", Font.PLAIN, 25));
@@ -171,6 +174,16 @@ public class Kalkulator extends JFrame {
 		panelDugmici.add(btnKoren);
 		
 		btnPodeljeno = new JButton("\u00F7");
+		btnPodeljeno.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(textFieldPomocni.getText()!="") {
+					textFieldPomocni.setText(textFieldPomocni.getText()+textFieldTrenutni.getText()+"\u00F7");
+					unosOdPocetka=true;
+					return;
+				}
+				textFieldPomocni.setText(textFieldTrenutni.getText()+"\u00F7");
+			}
+		});
 		btnPodeljeno.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		panelDugmici.add(btnPodeljeno);
 		
@@ -202,6 +215,16 @@ public class Kalkulator extends JFrame {
 		panelDugmici.add(btn9);
 		
 		btnPuta = new JButton("\u00D7");
+		btnPuta.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(textFieldPomocni.getText()!="") {
+					textFieldPomocni.setText(textFieldPomocni.getText()+textFieldTrenutni.getText()+"\u00D7");
+					unosOdPocetka=true;
+					return;
+				}
+				textFieldPomocni.setText(textFieldTrenutni.getText()+"\u00D7");
+			}
+		});
 		btnPuta.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		panelDugmici.add(btnPuta);
 		
@@ -233,6 +256,16 @@ public class Kalkulator extends JFrame {
 		panelDugmici.add(btn6);
 		
 		btnMinus = new JButton("\u2212");
+		btnMinus.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(textFieldPomocni.getText()!="") {
+					textFieldPomocni.setText(textFieldPomocni.getText()+textFieldTrenutni.getText()+"\u2212");
+					unosOdPocetka=true;
+					return;
+				}
+				textFieldPomocni.setText(textFieldTrenutni.getText()+"\u2212");
+			}
+		});
 		btnMinus.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		panelDugmici.add(btnMinus);
 		
@@ -267,8 +300,8 @@ public class Kalkulator extends JFrame {
 		btnPlus.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(textFieldPomocni.getText()!="") {
-					String postojece=textFieldPomocni.getText();
-					textFieldPomocni.setText(postojece+textFieldTrenutni.getText()+"+");
+					textFieldPomocni.setText(textFieldPomocni.getText()+textFieldTrenutni.getText()+"+");
+					unosOdPocetka=true;
 					return;
 				}
 				textFieldPomocni.setText(textFieldTrenutni.getText()+"+");
@@ -299,42 +332,19 @@ public class Kalkulator extends JFrame {
 		btnJednako.setBackground(new Color(0, 128, 192));
 		btnJednako.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		panelDugmici.add(btnJednako);
-		
 
-		
-		
-		
-		
-		
-		
-		
 		 SwingUtilities.invokeLater(() -> {//gde hoces kursor
 	            textFieldTrenutni.requestFocusInWindow();
 	        });
 	    }
-	
-	
 	public void postaviBroj(int broj) {
-		
-		String br=Integer.toString(broj);
-		String postojece = textFieldTrenutni.getText();
-		if(postojece.equals("0")) {
-			textFieldTrenutni.setText(br);
-			return;
-		}
-		try {
-			//textFieldPomocni.getText().charAt(textFieldPomocni.getText().length()-1)=='+'
-		if(textFieldPomocni.getText().charAt(textFieldPomocni.getText().length()-1)=='+') {
-				textFieldTrenutni.setText(br);
-				return;
-			}
-		}catch (Exception e) {
-			// TODO: handle exception
-		}
-		
-		
-		textFieldTrenutni.setText(postojece + br);
-	}
-	
+	    String br = Integer.toString(broj);
 
+	    if (unosOdPocetka || textFieldTrenutni.getText().equals("0")) {
+	        textFieldTrenutni.setText(br);
+	        unosOdPocetka = false; // nakon prvog broja, sledeći dodajemo normalno
+	    } else {
+	        textFieldTrenutni.setText(textFieldTrenutni.getText() + br);
+	    }
+	}
 }
