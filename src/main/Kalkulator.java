@@ -163,6 +163,12 @@ public class Kalkulator extends JFrame {
 		panelDugmici.add(btnReciprocno);
 		
 		btnNaKvadrat = new JButton("X\u00B2");
+		btnNaKvadrat.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textFieldPomocni.setText("sqr("+textFieldTrenutni.getText()+")");
+				textFieldTrenutni.setText(OperacijeNadStringom.kvadriraj(textFieldTrenutni.getText()));
+			}
+		});
 		btnNaKvadrat.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		panelDugmici.add(btnNaKvadrat);
 		
@@ -170,6 +176,12 @@ public class Kalkulator extends JFrame {
 		//JLabel label = new JLabel("<html>&radic;9 = 3</html>");
 
 		btnKoren = new JButton("<html>&radic;X</html>");
+		btnKoren.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textFieldPomocni.setText("\u221A("+textFieldTrenutni.getText()+")");
+				textFieldTrenutni.setText(OperacijeNadStringom.korenuj(textFieldTrenutni.getText()));
+			}
+		});
 		btnKoren.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		panelDugmici.add(btnKoren);
 		
