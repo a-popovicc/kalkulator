@@ -212,6 +212,7 @@ public class OperacijeNadStringom {
 	    m.appendTail(sb);
 	    return sb.toString();
 	}
+
 	
 	public static String kvadriraj(String a) {
 		double br=Double.parseDouble(a);
