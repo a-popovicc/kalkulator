@@ -147,7 +147,7 @@ public class Kalkulator extends JFrame {
 		            char poslednji = pomocniText.charAt(pomocniText.length() - 1);
 
 		            // Ako je poslednji znak operator ili otvorena zagrada → samo dodaj (
-		            if (poslednji == '(' || poslednji == '+' || poslednji == '-' || poslednji == '\u00D7' || poslednji == '\u00F7') {
+		            if (poslednji == '(' || poslednji == '+' || poslednji == '\u2212' || poslednji == '\u00D7' || poslednji == '\u00F7') {
 		                textFieldPomocni.setText(pomocniText + "(");
 		            }
 		            // Ako je poslednji znak zatvorena zagrada → dodaj implicitno množenje
@@ -248,6 +248,7 @@ public class Kalkulator extends JFrame {
 		btnProcenat = new JButton("%");
 		btnProcenat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 			}
 		});
 		btnProcenat.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -307,31 +308,34 @@ public class Kalkulator extends JFrame {
 				if(textFieldTrenutni.getText().endsWith(".")) {
 		        	textFieldTrenutni.setText(textFieldTrenutni.getText()+"0");
 		        }
-				if(textFieldPomocni.getText().startsWith("sqr")) {
-					textFieldPomocni.setText(OperacijeNadStringom.kvadriraj(OperacijeNadStringom.izmedjuZagrada(textFieldPomocni.getText()))+"\u00F7");
-					return;
-				}
-				if(textFieldPomocni.getText().startsWith("\u221A")) {
-					textFieldPomocni.setText(OperacijeNadStringom.korenuj(OperacijeNadStringom.izmedjuZagrada(textFieldPomocni.getText()))+"\u00F7");
-					return;
-				}
+				
 				//bilo bi lakse da uzima resenje direktno iz trenutnog ali sta ako pre operatoa korisnik klikne broj pa se truntni promeni
 				String pomocniText = textFieldPomocni.getText();
 		        String trenutniText = textFieldTrenutni.getText();
-		        try {
-			        if(Character.isDigit(pomocniText.charAt(pomocniText.length() - 1))) {
-			        	textFieldPomocni.setText(textFieldPomocni.getText()+"\u00F7");
-			        	return;
-			        }
-			        }catch (Exception a) {
-						// TODO: handle exception
-					}
-
-
+		        
 		        if (pomocniText.isEmpty()) {
 		           
 		            textFieldPomocni.setText(trenutniText + "\u00F7");
 		        } else {
+		        	
+		        	if(Character.isDigit(pomocniText.charAt(pomocniText.length() - 1))) {
+			        	textFieldPomocni.setText(textFieldPomocni.getText()+"\u00F7");
+			        	return;
+			        }
+		        	if(textFieldPomocni.getText().startsWith("sqr")) {
+						textFieldPomocni.setText(OperacijeNadStringom.kvadriraj(OperacijeNadStringom.izmedjuZagrada(textFieldPomocni.getText()))+"\u00F7");
+						return;
+					}
+					if(textFieldPomocni.getText().startsWith("\u221A")) {
+						textFieldPomocni.setText(OperacijeNadStringom.korenuj(OperacijeNadStringom.izmedjuZagrada(textFieldPomocni.getText()))+"\u00F7");
+						return;
+					}
+					if(pomocniText.contains("=")) {
+			        	textFieldPomocni.setText(trenutniText+"\u00F7");
+			        	unosOdPocetka=true;
+			        	return;
+			        }
+					
 		            char poslednji = pomocniText.charAt(pomocniText.length() - 1);
 		            if (poslednji != ')') {
 		                textFieldPomocni.setText(pomocniText + trenutniText + "\u00F7");
@@ -386,29 +390,30 @@ public class Kalkulator extends JFrame {
 				if(textFieldTrenutni.getText().endsWith(".")) {
 		        	textFieldTrenutni.setText(textFieldTrenutni.getText()+"0");
 		        }
-				if(textFieldPomocni.getText().startsWith("sqr")) {
-					textFieldPomocni.setText(OperacijeNadStringom.kvadriraj(OperacijeNadStringom.izmedjuZagrada(textFieldPomocni.getText()))+"\u00D7");
-					return;
-				}
-				if(textFieldPomocni.getText().startsWith("\u221A")) {
-					textFieldPomocni.setText(OperacijeNadStringom.korenuj(OperacijeNadStringom.izmedjuZagrada(textFieldPomocni.getText()))+"\u00D7");
-					return;
-				}
+				
 				String pomocniText = textFieldPomocni.getText();
 		        String trenutniText = textFieldTrenutni.getText();
-		        try {
-			        if(Character.isDigit(pomocniText.charAt(pomocniText.length() - 1))) {
-			        	textFieldPomocni.setText(textFieldPomocni.getText()+"\u00D7");
-			        	return;
-			        }
-			        }catch (Exception a) {
-						// TODO: handle exception
-					}
-
 
 		        if (pomocniText.isEmpty()) {
 		            textFieldPomocni.setText(trenutniText + "\u00D7");
 		        } else {
+		        	if(textFieldPomocni.getText().startsWith("sqr")) {
+						textFieldPomocni.setText(OperacijeNadStringom.kvadriraj(OperacijeNadStringom.izmedjuZagrada(textFieldPomocni.getText()))+"\u00D7");
+						return;
+					}
+					if(textFieldPomocni.getText().startsWith("\u221A")) {
+						textFieldPomocni.setText(OperacijeNadStringom.korenuj(OperacijeNadStringom.izmedjuZagrada(textFieldPomocni.getText()))+"\u00D7");
+						return;
+					}
+		        	if(Character.isDigit(pomocniText.charAt(pomocniText.length() - 1))) {
+			        	textFieldPomocni.setText(textFieldPomocni.getText()+"\u00D7");
+			        	return;
+			        }
+		        	if(pomocniText.contains("=")) {
+			        	textFieldPomocni.setText(trenutniText+"\u00D7");
+			        	unosOdPocetka=true;
+			        	return;
+			        }
 		            char poslednji = pomocniText.charAt(pomocniText.length() - 1);
 
 		           
@@ -462,39 +467,12 @@ public class Kalkulator extends JFrame {
 		btnMinus = new JButton("\u2212");
 		btnMinus.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 				if (textFieldTrenutni.getText().endsWith(".")) {
 				    textFieldTrenutni.setText(textFieldTrenutni.getText() + "0");
 				}
-
-				if (textFieldPomocni.getText().startsWith("sqr")) {
-				    textFieldPomocni.setText(
-				        OperacijeNadStringom.kvadriraj(
-				            OperacijeNadStringom.izmedjuZagrada(textFieldPomocni.getText())
-				        ) + "\u2212"
-				    );
-				    return;
-				}
-
-				if (textFieldPomocni.getText().startsWith("\u221A")) {
-				    textFieldPomocni.setText(
-				        OperacijeNadStringom.korenuj(
-				            OperacijeNadStringom.izmedjuZagrada(textFieldPomocni.getText())
-				        ) + "\u2212"
-				    );
-				    return;
-				}
-
 				String pomocniText = textFieldPomocni.getText();
 				String trenutniText = textFieldTrenutni.getText();
-
-				try {
-				    if (Character.isDigit(pomocniText.charAt(pomocniText.length() - 1))) {
-				        textFieldPomocni.setText(pomocniText + "\u2212");
-				        return;
-				    }
-				} catch (Exception a) {
-				    // ignorisi
-				}
 
 				// unarni minus ako se završava otvorenom zagradom
 				if (!pomocniText.isEmpty() && pomocniText.charAt(pomocniText.length() - 1) == '(' && unosOdPocetka==true) {
@@ -507,6 +485,35 @@ public class Kalkulator extends JFrame {
 				if (pomocniText.isEmpty()) {
 				    textFieldPomocni.setText(trenutniText + "\u2212");
 				} else {
+					if (textFieldPomocni.getText().startsWith("\u221A")) {
+					    textFieldPomocni.setText(
+					        OperacijeNadStringom.korenuj(
+					            OperacijeNadStringom.izmedjuZagrada(textFieldPomocni.getText())
+					        ) + "\u2212"
+					    );
+					    return;
+					}//ako se je u pomocnom koren
+					if (textFieldPomocni.getText().startsWith("sqr")) {
+					    textFieldPomocni.setText(
+					        OperacijeNadStringom.kvadriraj(
+					            OperacijeNadStringom.izmedjuZagrada(textFieldPomocni.getText())
+					        ) + "\u2212"
+					    );
+					    return;
+					}//ako je u pomocnom kvadrat
+					if (Character.isDigit(pomocniText.charAt(pomocniText.length() - 1))) {
+				        textFieldPomocni.setText(pomocniText + "\u2212");
+				        return;
+				    }
+					if(pomocniText.contains("=")) {
+			        	textFieldPomocni.setText(trenutniText+"\u2212");
+			        	unosOdPocetka=true;
+			        	return;
+			        }
+					if (Character.isDigit(pomocniText.charAt(pomocniText.length() - 1))) {
+				        textFieldPomocni.setText(pomocniText + "\u2212");
+				        return;
+				    }
 				    char poslednji = pomocniText.charAt(pomocniText.length() - 1);
 
 				    if (poslednji != ')') {
@@ -562,34 +569,33 @@ public class Kalkulator extends JFrame {
 				if(textFieldTrenutni.getText().endsWith(".")) {
 		        	textFieldTrenutni.setText(textFieldTrenutni.getText()+"0");
 		        }// ova funkcija cuva da ukoliko se slucajno klikne operator pre zavrsenih decimala automatski dodaje .0 u pomocni
-				if(textFieldPomocni.getText().startsWith("sqr")) {
-					textFieldPomocni.setText(OperacijeNadStringom.kvadriraj(OperacijeNadStringom.izmedjuZagrada(textFieldPomocni.getText()))+"+");
-					return;
-				}
-				if(textFieldPomocni.getText().startsWith("\u221A")) {
-					textFieldPomocni.setText(OperacijeNadStringom.korenuj(OperacijeNadStringom.izmedjuZagrada(textFieldPomocni.getText()))+"+");
-					return;
-				}
+				
 				String pomocniText = textFieldPomocni.getText();
 		        String trenutniText = textFieldTrenutni.getText();
-		        
-		        /*try {
-		        if(Character.isDigit(pomocniText.charAt(pomocniText.length() - 1))) {
-		        	textFieldPomocni.setText(textFieldPomocni.getText()+"+");
-		        	return;
-		        }
-		        }catch (Exception a) {
-					// TODO: handle exception
-				}*/
+		       
 		        
 		        if (pomocniText.isEmpty()) {
 		            // Ako nema ničega, dodaj samo trenutni broj i +
 		            textFieldPomocni.setText(trenutniText + "+");
 		        } else {
+		        	
+		        	if(textFieldPomocni.getText().startsWith("sqr")) {
+						textFieldPomocni.setText(OperacijeNadStringom.kvadriraj(OperacijeNadStringom.izmedjuZagrada(textFieldPomocni.getText()))+"+");
+						return;
+					}
+					if(textFieldPomocni.getText().startsWith("\u221A")) {
+						textFieldPomocni.setText(OperacijeNadStringom.korenuj(OperacijeNadStringom.izmedjuZagrada(textFieldPomocni.getText()))+"+");
+						return;
+					}
 		        	if(Character.isDigit(pomocniText.charAt(pomocniText.length() - 1))) {
 			        	textFieldPomocni.setText(textFieldPomocni.getText()+"+");
 			        	return;//ovo dolazi kao odgovor na slucaj da se nastavlja opracija nakon kvadriranja koje je u pomocni poslao samo broj bez daljeg operatora
 			        }
+		        	if(pomocniText.contains("=")) {
+			        	textFieldPomocni.setText(trenutniText+"+");
+			        	unosOdPocetka=true;
+			        	return;
+				    }
 		            char poslednji = pomocniText.charAt(pomocniText.length() - 1);
 
 		            // Ako poslednji znak NIJE zatvorena zagrada, dodaj broj pre +
