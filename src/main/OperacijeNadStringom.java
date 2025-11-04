@@ -58,7 +58,6 @@ public class OperacijeNadStringom {
 	    }
 	    return izraz;
 	}
-
 	public static boolean proveriZagrade(String izraz) {
 	    if (izraz == null) return false;
 
@@ -79,15 +78,26 @@ public class OperacijeNadStringom {
 	public static boolean mozeLiDaRacuna(String a) {
 	    if (a == null || a.isEmpty()) return false;
 
-	    // Ako izraz nije validan po zagradama — odmah stop
 	    if (!proveriZagrade(a)) return false;
 
-	    // Ako se završava operatorom — ne računaj
 	    char last = a.charAt(a.length() - 1);
-	    if (last == '\u00F7' || last == '\u00D7' || last == '(') 
+
+	    // Ako se završava operatorom (osim %)
+	    if (last == '\u00F7' || last == '\u00D7' || last == '(')
 	        return false;
 
-	    // Broj operatora — čisto da proverimo da ima smisla računati
+	    // Ako se završava na procenat → validno
+	    if (last == '%') return true;
+
+	    // Ako ima procenat negde u sredini (npr. "200+10%")
+	    if (a.contains("%")) {
+	        int poz = a.indexOf('%');
+	        boolean pre = (poz > 0 && Character.isDigit(a.charAt(poz - 1)));
+	        boolean posle = (poz < a.length() - 1 &&
+	                         (Character.isDigit(a.charAt(poz + 1)) || a.charAt(poz + 1) == ')'));
+	        if (pre || posle) return true;
+	    }
+
 	    int brojac = 0;
 	    for (int i = 0; i < a.length(); i++) {
 	        char c = a.charAt(i);
@@ -95,85 +105,23 @@ public class OperacijeNadStringom {
 	            brojac++;
 	    }
 
-	    
 	    return brojac >= 1;
 	}
-
-	/*public static String racunanjePomocnog(String str) {
-	   
-
-	    str = str.replace('\u00D7', '*'); 
-	    str = str.replace('\u00F7', '/');
-	    str = str.replace('\u2212', '-'); 
-
-	    
-	    String izraz = str.substring(0, str.length() - 1);
-
-	    double a = 0;
-	    double b = 0;
-	    double rezultat = 0;
-
-	    try {
-	        if (izraz.contains("+")) {
-	            String[] delovi = izraz.split("\\+");
-	            if (delovi.length == 2) {
-	                a = Double.parseDouble(delovi[0]);
-	                b = Double.parseDouble(delovi[1]);
-	                rezultat = a + b;
-	            }
-	        } else if (izraz.contains("-")) {
-	           
-	            String[] delovi = izraz.split("(?<=\\d)-(?=\\d)");
-	            if (delovi.length == 2) {
-	                a = Double.parseDouble(delovi[0]);
-	                b = Double.parseDouble(delovi[1]);
-	                rezultat = a - b;
-	            }
-	        } else if (izraz.contains("*")) {
-	            String[] delovi = izraz.split("\\*");
-	            if (delovi.length == 2) {
-	                a = Double.parseDouble(delovi[0]);
-	                b = Double.parseDouble(delovi[1]);
-	                rezultat = a * b;
-	            }
-	        } else if (izraz.contains("/")) {
-	            String[] delovi = izraz.split("/");
-	            if (delovi.length == 2) {
-	                a = Double.parseDouble(delovi[0]);
-	                b = Double.parseDouble(delovi[1]);
-	                if (b == 0) return "Greška"; // zaštita od deljenja nulom
-	                rezultat = a / b;
-	            }
-	        } else {
-	            return ""; // nije prepoznat operator
-	        }
-	    } catch (NumberFormatException e) {
-	        return "Greška"; // nevalidan broj
-	    }
-
-	    // Ako rezultat nema decimalni deo, vrati ga kao int
-	    if (rezultat % 1 == 0) {
-	        return Integer.toString((int) rezultat);
-	    } else {
-	        return Double.toString(rezultat);
-	    }
-	}*/
-	
-	// ja sam napisao kad su dva broja a chat je ispravio kad ih ima vise
-	
 	public static String racunanje(String str) {
-	    // 1️⃣ Zamena Unicode znakova
+	    // 1️⃣ Zamena Unicode znakova u standardne
 	    str = str.replace('\u00D7', '*')  // ×
 	             .replace('\u00F7', '/')  // ÷
 	             .replace('\u2212', '-'); // −
 
-	    // 2️⃣ Ako poslednji znak nije broj ni zagrada, ukloni ga
-	    if (!Character.isDigit(str.charAt(str.length() - 1)) && str.charAt(str.length() - 1) != ')') {
+	    // 2️⃣ Ukloni nevalidne znakove na kraju
+	    if (!Character.isDigit(str.charAt(str.length() - 1))
+	            && str.charAt(str.length() - 1) != ')'
+	            && str.charAt(str.length() - 1) != '%') {
 	        str = str.substring(0, str.length() - 1);
 	    }
 
 	    try {
-	        // 3️⃣ Obradi zagrade rekurzivno
+	        // 3️⃣ Obrada zagrada rekurzivno
 	        while (str.contains("(")) {
 	            int open = str.lastIndexOf('(');
 	            int close = str.indexOf(')', open);
@@ -184,35 +132,29 @@ public class OperacijeNadStringom {
 	            str = str.substring(0, open) + rez + str.substring(close + 1);
 	        }
 
-	        // 4️⃣ Parsiranje brojeva i operatora, uz podršku za negativne brojeve
+	        // 4️⃣ Pretvaranje svih brojeva sa % u odgovarajući decimalni oblik
+	        str = obradiProcenat(str);
+
+	        // 5️⃣ Parsiranje brojeva i operatora
 	        java.util.List<Double> brojevi = new java.util.ArrayList<>();
 	        java.util.List<Character> oper = new java.util.ArrayList<>();
-
 	        StringBuilder broj = new StringBuilder();
+
 	        for (int i = 0; i < str.length(); i++) {
 	            char c = str.charAt(i);
 
-	            if (c == '+' || c == '*' || c == '/') {
+	            if (c == '+' || c == '-' || c == '*' || c == '/') {
 	                brojevi.add(Double.parseDouble(broj.toString()));
 	                oper.add(c);
 	                broj.setLength(0);
-	            } else if (c == '-') {
-	                // Minus znak na početku ili posle operatora → deo broja (negativan)
-	                if (i == 0 || "+-*/".indexOf(str.charAt(i - 1)) != -1) {
-	                    broj.append(c);
-	                } else {
-	                    brojevi.add(Double.parseDouble(broj.toString()));
-	                    oper.add(c);
-	                    broj.setLength(0);
-	                }
 	            } else {
 	                broj.append(c);
 	            }
 	        }
 	        brojevi.add(Double.parseDouble(broj.toString()));
 
-	        // 5️⃣ Prvo × i ÷
-	        for (int i = 0; i < oper.size(); ) {
+	        // 6️⃣ × i ÷
+	        for (int i = 0; i < oper.size();) {
 	            char op = oper.get(i);
 	            if (op == '*' || op == '/') {
 	                double a = brojevi.get(i);
@@ -226,7 +168,7 @@ public class OperacijeNadStringom {
 	            }
 	        }
 
-	        // 6️⃣ Zatim + i -
+	        // 7️⃣ + i -
 	        double rezultat = brojevi.get(0);
 	        for (int i = 0; i < oper.size(); i++) {
 	            char op = oper.get(i);
@@ -235,20 +177,42 @@ public class OperacijeNadStringom {
 	            else if (op == '-') rezultat -= b;
 	        }
 
-	        // 7️⃣ Vraćanje rezultata
-	        if (rezultat % 1 == 0) {
-	            return Integer.toString((int) rezultat);
-	        } else {
-	            return Double.toString(rezultat);
-	        }
+	        // 8️⃣ Formatiranje rezultata
+	        return (rezultat % 1 == 0) ? Integer.toString((int) rezultat) : Double.toString(rezultat);
 
 	    } catch (Exception e) {
 	        return "Greška";
 	    }
 	}
 
+	// Helper metoda koja konvertuje sve procente u decimalni oblik pre parsiranja
+	private static String obradiProcenat(String str) {
+	    java.util.regex.Matcher m = java.util.regex.Pattern.compile("(\\d+(?:\\.\\d+)?)%").matcher(str);
+	    StringBuffer sb = new StringBuffer();
 
+	    while (m.find()) {
+	        double broj = Double.parseDouble(m.group(1));
+	        double rez = broj / 100.0;
 
+	        // Ako pre procenta postoji operator + ili - → množi sa prethodnim brojem
+	        int start = m.start();
+	        if (start > 0) {
+	            char pre = str.charAt(start - 1);
+	            if (pre == '+' || pre == '-') {
+	                // traži prethodni broj
+	                int j = start - 2;
+	                while (j >= 0 && (Character.isDigit(str.charAt(j)) || str.charAt(j) == '.')) j--;
+	                double prethodni = Double.parseDouble(str.substring(j + 1, start - 1));
+	                rez = prethodni * broj / 100.0;
+	            }
+	        }
+
+	        m.appendReplacement(sb, Double.toString(rez));
+	    }
+	    m.appendTail(sb);
+	    return sb.toString();
+	}
+	
 	public static String kvadriraj(String a) {
 		double br=Double.parseDouble(a);
 		double rezultat=Math.pow(br, 2);

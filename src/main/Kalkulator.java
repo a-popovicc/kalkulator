@@ -248,8 +248,91 @@ public class Kalkulator extends JFrame {
 		btnProcenat = new JButton("%");
 		btnProcenat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-			}
+				if(textFieldTrenutni.getText().endsWith(".")) {
+		        	textFieldTrenutni.setText(textFieldTrenutni.getText()+"0");
+		        }	
+		        String pomocniText = textFieldPomocni.getText();
+		        String trenutniText = textFieldTrenutni.getText();
+		        
+		        // 🔹 1. Ako je pomoćni prazan → koristi trenutni broj
+		        if (pomocniText.isEmpty()) {
+	                textFieldPomocni.setText(trenutniText + "%");
+	                textFieldTrenutni.setText(""); 
+		            return;
+		        }
+	
+		        // 🔹 2. Ako se pomoćni završava znakom jednakosti — kreći novi izraz
+		        if (pomocniText.endsWith("=")) {
+		            textFieldPomocni.setText(trenutniText + "%");
+		            textFieldTrenutni.setText("");
+		            return;
+		        }
+	
+		        char poslednji = pomocniText.charAt(pomocniText.length() - 1);
+	
+		        // 🔹 3. Ako se završava brojem → samo dodaj %
+		        if (Character.isDigit(poslednji)) {
+		            textFieldPomocni.setText(pomocniText + "%");
+		            return;
+		        }
+	
+		        // 🔹 4. Ako se završava operatorom → koristi trenutni broj + %
+		        if ("＋−×÷^".contains(String.valueOf(poslednji))) {
+		            if (!trenutniText.isEmpty()) {
+		                textFieldPomocni.setText(pomocniText + trenutniText + "%");
+		                textFieldTrenutni.setText("");
+		            }
+		            return;
+		        }
+	
+		        // 🔹 5. Ako se završava na otvorenu zagradu
+		        if (poslednji == '(') {
+		            if (!trenutniText.isEmpty()) {
+		                textFieldPomocni.setText(pomocniText + trenutniText + "%");
+		                textFieldTrenutni.setText("");
+		            }
+		            return;
+		        }
+	
+		        // 🔹 6. Ako se završava na zatvorenu zagradu
+		        if (poslednji == ')') {
+		            textFieldPomocni.setText(pomocniText + "%");
+		            return;
+		        }
+	
+		        // 🔹 7. Ako u pomoćnom već postoji kvadrat ili koren
+		        if (pomocniText.startsWith("sqr")) {
+		            textFieldPomocni.setText(
+		                OperacijeNadStringom.kvadriraj(
+		                    OperacijeNadStringom.izmedjuZagrada(pomocniText)
+		                ) + "%"
+		            );
+		            return;
+		        }
+		        if (pomocniText.startsWith("\u221A")) {
+		            textFieldPomocni.setText(
+		                OperacijeNadStringom.korenuj(
+		                    OperacijeNadStringom.izmedjuZagrada(pomocniText)
+		                ) + "%"
+		            );
+		            return;
+		        }
+	
+		        // 🔹 8. Ako postoji operator i trenutni broj → dodaj % na kraju izraza
+		        if (OperacijeNadStringom.mozeLiDaRacuna(pomocniText + trenutniText + "%")) {
+		            textFieldPomocni.setText(pomocniText + trenutniText + "%");
+		            textFieldTrenutni.setText("");
+		        }
+	
+		        // Nakon unosa procenata, ako je moguće računanje — izračunaj
+		        if (OperacijeNadStringom.mozeLiDaRacuna(textFieldPomocni.getText())) {
+		            textFieldTrenutni.setText(
+		                OperacijeNadStringom.racunanje(textFieldPomocni.getText())
+		            );
+		        }
+	
+		        unosOdPocetka = true;
+		    }
 		});
 		btnProcenat.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		panelDugmici.add(btnProcenat);
@@ -681,6 +764,10 @@ public class Kalkulator extends JFrame {
 	        	textFieldPomocni.setText(textFieldTrenutni.getText()+"=");
 	        	return;
 	        }
+	        if(pomocniText.startsWith("\u221A")) {
+	        	textFieldPomocni.setText(textFieldTrenutni.getText()+"=");
+	        	return;
+	        }
 
 	        //  Ako pomoćni završava operatorom dodaj trenutni i "=" pa računa
 	        char poslednji = pomocniText.charAt(pomocniText.length() - 1);
@@ -691,6 +778,12 @@ public class Kalkulator extends JFrame {
 	            textFieldTrenutni.setText(OperacijeNadStringom.racunanje(izraz));
 	            return;
 	        }else if(Character.isDigit(poslednji)) {
+	        	izraz=pomocniText;
+	        	izraz=OperacijeNadStringom.autoZatvoriZagrade(izraz);
+	        	textFieldPomocni.setText(izraz + "=");
+	        	textFieldTrenutni.setText(OperacijeNadStringom.racunanje(izraz));
+	        	return;
+	        }else if(poslednji=='%') {
 	        	izraz=pomocniText;
 	        	izraz=OperacijeNadStringom.autoZatvoriZagrade(izraz);
 	        	textFieldPomocni.setText(izraz + "=");
