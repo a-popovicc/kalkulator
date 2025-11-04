@@ -36,7 +36,7 @@ public class Kalkulator extends JFrame {
 	private JButton btnCancel;
 	private JButton btnC;
 	private JButton btnPodeljeno;
-	private JButton btnReciprocno;
+	private JButton btnProcenat;
 	private JButton btnNaKvadrat;
 	private JButton btn7;
 	private JButton btnKoren;
@@ -50,7 +50,7 @@ public class Kalkulator extends JFrame {
 	private JButton btn1;
 	private JButton btnPlus;
 	private JButton btn3;
-	private JButton btnProcenat;
+	private JButton btnIstorija;
 	private JButton btn2;
 	private JButton btn0;
 	private JButton btnZarez;
@@ -245,9 +245,13 @@ public class Kalkulator extends JFrame {
 		panelDugmici.add(btnCancel);
 		//btnCancel.setIcon(new ImageIcon(Kalkulator.class.getResource("/Icons/cancel2.png")));
 		
-		btnReciprocno = new JButton("1/X");
-		btnReciprocno.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		panelDugmici.add(btnReciprocno);
+		btnProcenat = new JButton("%");
+		btnProcenat.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		btnProcenat.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		panelDugmici.add(btnProcenat);
 		
 		btnNaKvadrat = new JButton("X\u00B2");
 		btnNaKvadrat.addActionListener(new ActionListener() {
@@ -611,9 +615,9 @@ public class Kalkulator extends JFrame {
 		btnPlus.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		panelDugmici.add(btnPlus);
 		
-		btnProcenat = new JButton("%");
-		btnProcenat.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		panelDugmici.add(btnProcenat);
+		btnIstorija = new JButton("Hist.");
+		btnIstorija.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		panelDugmici.add(btnIstorija);
 		
 		btn0 = new JButton("0");
 		btn0.addActionListener(new ActionListener() {
