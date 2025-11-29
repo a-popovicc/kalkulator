@@ -1,8 +1,9 @@
 📌 Calculator – Java Swing Project
-🧮 Smart desktop calculator built as my first larger Java project
+
+Smart desktop calculator built as my first larger Java project
 
 
-📖 Overview
+ Overview
 
 This project represents my first serious Java application developed after learning core programming fundamentals at university, including:
 -Control flow (loops, conditionals)
@@ -18,7 +19,7 @@ Advanced event handling (each button changes behavior depending on previous inpu
 
 It was written in Eclipse, using pure Java Swing, without FXML, Scene Builder, or any external libraries.
 
-🎯 Features
+Features
 
 - Basic arithmetic operations
 - Parentheses support ()
@@ -30,7 +31,7 @@ It was written in Eclipse, using pure Java Swing, without FXML, Scene Builder, o
 - Complex button behavior depending on previous context
 - Fully custom layout designed using Swing components
 
-🛠 Technologies Used
+Technologies Used
 
 Java 17
 Java Swing for GUI
@@ -38,7 +39,7 @@ Eclipse IDE
 OOP principles
 Lambda expressions & Streams (used later in development with assistance)
 
-🧠 What This Project Represents
+What This Project Represents
 
 This calculator is the first project where I:
 Built a complex GUI from scratch
@@ -65,7 +66,7 @@ Open the project in Eclipse (or any Java IDE).
 Run the Calculator.java main class.
 No additional dependencies are required.
 
-🧩 Future Improvements (optional ideas)
+Future Improvements (optional ideas)
 
 Although the project is complete, future versions might include:
 Migrating the UI to JavaFX
